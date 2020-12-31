@@ -1,11 +1,11 @@
-import urandom,uhashlib
+from array import array
+import ujson,utime
 
-def sha1(value):
-    m = uhashlib.sha1()
-    m.update('b{}'.format(value))
-    hashValue = m.digest()
-    return hashValue
-def random():
-    return str(urandom.getrandbits(30))+ str(urandom.getrandbits(30))
-
-print(sha1(random()))
+for i in range(200000):
+    data = '{"lon":"'+str(i)+'"}'
+    file = open ("data.txt", "w")
+    file.write(data)
+    f = open('data.txt',"r")
+    c = f.readline()
+    print(ujson.loads(c))
+    utime.sleep(1)

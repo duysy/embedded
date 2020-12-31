@@ -2,10 +2,11 @@
     "account": [{
         "username": "adminsmarthome",
         "password": "adminsmarthome",
-        "cookie": "56347563868"
+        "cookie": "619908010719507389294146618568882294115423630824006588"
     }],
     "wifiHome": {
         "essid": "ccc",
         "passwork": "123456789"
-    }
+    },
+    "device": {}
 }
