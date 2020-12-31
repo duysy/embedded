@@ -10,9 +10,7 @@ esp.osdebug(None)
 import gc
 gc.collect()
 
-ssid = 'Duysy'
-password = '123456789'
-
+#-----connect to wifi----
 sta_if = network.WLAN(network.STA_IF)
 if not sta_if.isconnected():
     sta_if.active(True)
@@ -20,10 +18,10 @@ if not sta_if.isconnected():
     while not sta_if.isconnected():
         print('connecting to network...')
 print('network config:', sta_if.ifconfig())
-
+#------make Ap -------
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
-ap.config(essid=ssid, password=password)
+ap.config(essid="Duysy", password="123456789")
 
 while ap.active() == False:
   print("Start")

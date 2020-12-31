@@ -1,0 +1,11 @@
+{
+    "account": [{
+        "username": "adminsmarthome",
+        "password": "adminsmarthome",
+        "cookie": "56347563868"
+    }],
+    "wifiHome": {
+        "essid": "ccc",
+        "passwork": "123456789"
+    }
+}
