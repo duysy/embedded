@@ -82,16 +82,16 @@ def slove(request):
                 print(saveFileData(ujson.dumps(file)))
                 return "Success"
             return "You not login"
-    else:
+    elif str(method).upper() == "GET":
         return ujson.dumps(file)
-    return "OK"
+    return "Hello"
 def random():
     return str(urandom.getrandbits(30))+ str(urandom.getrandbits(30))
 def saveFileData(data):
     try:
         file = open ("data.json", "w")
         file.write(data)
-        print(data)
+        file.close()
     except:
         return False
     return True
@@ -146,9 +146,13 @@ while True:
     conn, addr = s.accept()
     print('Got a connection from %s' % str(addr))
     request = conn.recv(1024)
-    data = ujson.loads(str(request.decode("UTF-8"))) # json data mothod,url,data....
-    print('Content = {}'.format(data))
-    conn.send(slove(data))
+    try:
+        data = ujson.loads(str(request.decode("UTF-8"))) # json data mothod,url,data....
+        print('Content = {}'.format(data))
+        response = slove(data)
+    except :
+        response = "Error"
+    conn.send(response)
     conn.close()
     if(utime.ticks_us() - startOpenAp > 10**6*200):
         ap = network.WLAN(network.AP_IF)
