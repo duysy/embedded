@@ -15,7 +15,7 @@
             "password":"adminsmarthome"
         }
     }
-/set-wifi = data = {
+/set-wifi  = {
         "method":"POST",
         "url":"/login",
         "cookie":"jhkjhjkh",
@@ -24,3 +24,6 @@
             "passwork": "123456789"
         }
     }
+/seset-device = {
+
+}

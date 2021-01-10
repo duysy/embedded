@@ -9,6 +9,9 @@ import esp
 esp.osdebug(None)
 import gc
 gc.collect()
+
+from machine import Pin
+led = Pin(2, Pin.OUT)
 ap = network.WLAN(network.AP_IF)
 sta_if = network.WLAN(network.STA_IF)
 def slove(request):
@@ -25,22 +28,24 @@ def slove(request):
                 if len(password) > 8:
                     file["account"][0]["password"]=password
                     print(saveFileData(ujson.dumps(file)))
+                    # fastBlinkSuccess()
                     return "Success"
                 else:
                     return "Passwork length > 9"
             else:
                 return "You not login"
         elif url == "/login":
-            print("login")
+            # print("login")
             usernamePost = data.get("username")
             passwordPost = data.get("password")
             usernameFile = file["account"][0].get("username")
             passwordFile = file["account"][0].get("password")
-            print(usernamePost,passwordPost,usernameFile,passwordFile)
+            # print(usernamePost,passwordPost,usernameFile,passwordFile)
             if(usernamePost == usernameFile and passwordPost == passwordFile):
                 newcookie  = str(random()+random()+random())
                 file["account"][0]["cookie"] = newcookie
                 print(saveFileData(ujson.dumps(file)))
+                # fastBlinkSuccess()
                 return newcookie
         elif url == "/set-wifi":
             if(cookie == str(request["cookie"])):
@@ -49,8 +54,8 @@ def slove(request):
                 file["wifiHome"]["essid"] = essid
                 file["wifiHome"]["passwork"] = passwork
                 print(saveFileData(ujson.dumps(file)))
-                connectToWifi()
-                return "Success"
+                # fastBlinkSuccess()
+                return str(connectToWifi())
             return "You not login"
         elif url == "/seset-device":
             if(cookie == str(request["cookie"])):
@@ -80,11 +85,12 @@ def slove(request):
                 iddevice = data.get("iddevice")
                 file["device"][iddevice]={"status":""}
                 print(saveFileData(ujson.dumps(file)))
+                # fastBlinkSuccess()
                 return "Success"
             return "You not login"
     elif str(method).upper() == "GET":
         return ujson.dumps(file)
-    return "Hello"
+    return "SqSmart"
 def random():
     return str(urandom.getrandbits(30))+ str(urandom.getrandbits(30))
 def saveFileData(data):
@@ -108,6 +114,23 @@ def sha1(value):
     m.update('b{}'.format(value))
     hashValue = m.digest()
     return hashValue
+def fastBlinkError():
+    for i in range(20):
+        led.on()
+        utime.sleep(0.1)
+        led.off()
+        utime.sleep(0.1)
+def fastBlinkSuccess():
+    for i in range(3):
+        led.on()
+        utime.sleep(0.1)
+        led.off()
+        utime.sleep(0.1)
+def slowBlink():
+    led.on()
+    utime.sleep(1)
+    led.off()
+    utime.sleep(1)
 def connectToWifi():
     start = utime.ticks_us()
     data = loadFileData()
@@ -117,11 +140,13 @@ def connectToWifi():
     sta_if.active(True)
     sta_if.connect(essid,passwork)
     while not sta_if.isconnected():
-        utime.sleep(2)
+        slowBlink()
         if((utime.ticks_us() - start) > 10**6*15):
+            fastBlinkError()
             break
         print('connecting to network...',essid,passwork)
     print('network config:', sta_if.ifconfig())
+    return sta_if.ifconfig()
     
 #------make ap wifi --------
 data = loadFileData()
@@ -137,24 +162,29 @@ print("AP successful  ",ap.ifconfig())
 #-----------connect wifi ---------
 connectToWifi()
 #-------------------------------------
-startOpenAp = utime.ticks_us()
-print("start server")
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('', 80))
-s.listen(5)
-while True:
-    conn, addr = s.accept()
-    print('Got a connection from %s' % str(addr))
-    request = conn.recv(1024)
-    try:
-        data = ujson.loads(str(request.decode("UTF-8"))) # json data mothod,url,data....
-        print('Content = {}'.format(data))
-        response = slove(data)
-    except :
-        response = "Error"
-    conn.send(response)
-    conn.close()
-    if(utime.ticks_us() - startOpenAp > 10**6*200):
-        ap = network.WLAN(network.AP_IF)
-        ap.active(False)
+
+led.on()
+import gc
+print(gc.mem_free())
+try:
+    print("start server")
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('', 80))
+    s.listen(5)
+    while True:
+        conn, addr = s.accept()
+        print('Got a connection from %s' % str(addr))
+        request = conn.recv(1024)
+        try:
+            request = str(request).split("[[")[1].split("]]")[0].replace("%7B","{").replace("%7D","}").replace("%22",'"').replace("%20"," ")
+            data = ujson.loads(request) # json data mothod,url,data....
+            print('Content = {}'.format(data))
+            response = slove(data)
+            print(response)
+        except:
+            response = request
+        conn.send(response)
+        conn.close()
+except:
+   resetMaching()
 
