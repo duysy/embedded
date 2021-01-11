@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <script>
+        setInterval(() => {
+
+            $.ajax({
+                type: 'GET',
+                url: '/[[%7B%22method%22:%20%22GET%22,%20%22url%22:%20%22/login%22,%20%22cookie%22:%20%22jhkjhjkh%22%7D]]',
+                success: data => {
+                    document.body.innerHTML = data
+                    console.log(data);
+                },
+                error: () => {
+                    console.log('Error');
+                }
+            })
+        }, 2000)
+    </script>
+</body>
+
+</html>
